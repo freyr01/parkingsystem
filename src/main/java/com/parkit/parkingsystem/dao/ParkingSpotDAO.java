@@ -34,6 +34,7 @@ public class ParkingSpotDAO {
         }finally {
             dataBaseConfig.closeConnection(con);
         }
+        logger.info("Return value: {0}", result);
         return result;
     }
 
