@@ -9,13 +9,15 @@ import com.parkit.parkingsystem.util.InputReaderUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ParkingService {
 
     private static final Logger logger = LogManager.getLogger("ParkingService");
 
-    private static IFareCalculatorService fareCalculatorService = new FareCalculatorServiceV2();
+   
+    private IFareCalculatorService fareCalculatorService;
 
     private InputReaderUtil inputReaderUtil;
     private ParkingSpotDAO parkingSpotDAO;
@@ -25,6 +27,11 @@ public class ParkingService {
         this.inputReaderUtil = inputReaderUtil;
         this.parkingSpotDAO = parkingSpotDAO;
         this.ticketDAO = ticketDAO;
+        
+        //Init discount list
+        ArrayList<IFareDiscount> discounts = new ArrayList<>();
+        discounts.add(new FareDiscount30MnFree());			//Add 30Mn free discount for all
+        this.fareCalculatorService = new FareCalculatorServiceV2(discounts);
     }
 
     public void processIncomingVehicle() {

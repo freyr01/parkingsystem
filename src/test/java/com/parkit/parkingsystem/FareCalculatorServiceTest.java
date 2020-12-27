@@ -6,7 +6,9 @@ import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.FareCalculatorService;
 import com.parkit.parkingsystem.service.FareCalculatorServiceV2;
+import com.parkit.parkingsystem.service.FareDiscount30MnFree;
 import com.parkit.parkingsystem.service.IFareCalculatorService;
+import com.parkit.parkingsystem.service.IFareDiscount;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class FareCalculatorServiceTest {
@@ -23,7 +26,9 @@ public class FareCalculatorServiceTest {
 
     @BeforeAll
     private static void setUp() {
-        fareCalculatorService = new FareCalculatorServiceV2();
+    	ArrayList<IFareDiscount> discounts = new ArrayList<>();
+    	discounts.add(new FareDiscount30MnFree());
+        fareCalculatorService = new FareCalculatorServiceV2(discounts);
     }
 
     @BeforeEach
