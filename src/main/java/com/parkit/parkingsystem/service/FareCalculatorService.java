@@ -68,7 +68,13 @@ public class FareCalculatorService implements IFareCalculatorService {
 	{
 		double totalDiscount = 1.0;
 		for(IFareDiscount discount : discounts) {
-			totalDiscount *= discount.calculateDiscount(ticket);
+			double discountPercent = discount.calculateDiscount(ticket);
+			if(discountPercent == 1.0 || discountPercent == 0.0) {
+				totalDiscount *= discountPercent;
+			}
+			else {
+				totalDiscount += discountPercent;
+			}
 		}
 		
 		return totalDiscount;
