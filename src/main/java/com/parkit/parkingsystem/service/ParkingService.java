@@ -27,7 +27,7 @@ public class ParkingService {
         this.inputReaderUtil = inputReaderUtil;
         this.parkingSpotDAO = parkingSpotDAO;
         this.ticketDAO = ticketDAO;    
-        this.fareCalculatorService = new FareCalculatorServiceV2();
+        this.fareCalculatorService = new FareCalculatorService();
     }
 
     public void processIncomingVehicle() {

@@ -1,4 +1,4 @@
-package com.parkit.parkingsystem.service;
+package com.parkit.parkingsystem.service.discount;
 
 import com.parkit.parkingsystem.model.Ticket;
 

@@ -1,4 +1,4 @@
-package com.parkit.parkingsystem.service;
+package com.parkit.parkingsystem.service.discount;
 
 import java.time.Duration;
 import java.time.Instant;

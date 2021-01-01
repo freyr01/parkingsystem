@@ -8,16 +8,20 @@ import java.util.List;
 
 import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.model.Ticket;
+import com.parkit.parkingsystem.service.discount.FareDiscount30MnFree;
+import com.parkit.parkingsystem.service.discount.IFareDiscount;
+import com.parkit.parkingsystem.service.discount.FareDiscount5PercentForKnownUser;
 
-public class FareCalculatorServiceV2 implements IFareCalculatorService {
+public class FareCalculatorService implements IFareCalculatorService {
 	
 	private List<IFareDiscount> discounts;
 
-	public FareCalculatorServiceV2() {
+	public FareCalculatorService() {
 		
 		discounts = new ArrayList<IFareDiscount>();
-		// Add here global discounts
-		discounts.add(new FareDiscount30MnFree());			//Add 30Mn free discount for all
+		// Activate discount by adding a new instance in the list
+		discounts.add(new FareDiscount30MnFree());			//Activate 30Mn free discount
+		discounts.add(new FareDiscount5PercentForKnownUser()); //Activate 5 percent discount for already know user
 	}
 	
 	@Override
@@ -38,6 +42,7 @@ public class FareCalculatorServiceV2 implements IFareCalculatorService {
        
        //Calculate discounts multiply number
        double totalDiscount = calculateDiscounts(ticket);
+       
        switch (ticket.getParkingSpot().getParkingType()){
 	       case CAR: {
 	           ticket.setPrice(durationInHour * Fare.CAR_RATE_PER_HOUR  * totalDiscount);

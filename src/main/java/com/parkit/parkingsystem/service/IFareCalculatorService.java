@@ -3,6 +3,7 @@ package com.parkit.parkingsystem.service;
 import java.util.List;
 
 import com.parkit.parkingsystem.model.Ticket;
+import com.parkit.parkingsystem.service.discount.IFareDiscount;
 
 public interface IFareCalculatorService {
 	

@@ -4,11 +4,11 @@ import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
-import com.parkit.parkingsystem.service.FareCalculatorServiceV2;
-import com.parkit.parkingsystem.service.FareDiscount30MnFree;
+import com.parkit.parkingsystem.service.FareCalculatorService;
 import com.parkit.parkingsystem.service.IFareCalculatorService;
-import com.parkit.parkingsystem.service.IFareDiscount;
-import com.parkit.parkingsystem.service.IFareDiscount5PourcentForKnownUser;
+import com.parkit.parkingsystem.service.discount.FareDiscount30MnFree;
+import com.parkit.parkingsystem.service.discount.IFareDiscount;
+import com.parkit.parkingsystem.service.discount.FareDiscount5PercentForKnownUser;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ public class FareCalculatorServiceTest {
 
     @BeforeAll
     private static void setUp() { 
-        fareCalculatorService = new FareCalculatorServiceV2();
+        fareCalculatorService = new FareCalculatorService();
     }
 
     @BeforeEach
@@ -164,7 +164,7 @@ public class FareCalculatorServiceTest {
         ticket.setOutTime(outTime);
     
         ticket.setParkingSpot(parkingSpot);
-        IFareDiscount fivePourcentDiscount = new IFareDiscount5PourcentForKnownUser();
+        IFareDiscount fivePourcentDiscount = new FareDiscount5PercentForKnownUser();
         fareCalculatorService.addDiscount(fivePourcentDiscount);
         fareCalculatorService.calculateFare(ticket);
         fareCalculatorService.removeDiscount(fivePourcentDiscount);

@@ -1,8 +1,8 @@
-package com.parkit.parkingsystem.service;
+package com.parkit.parkingsystem.service.discount;
 
 import com.parkit.parkingsystem.model.Ticket;
 
-public class IFareDiscount5PourcentForKnownUser implements IFareDiscount {
+public class FareDiscount5PercentForKnownUser implements IFareDiscount {
 
 	@Override
 	public double calculateDiscount(Ticket ticket) {
