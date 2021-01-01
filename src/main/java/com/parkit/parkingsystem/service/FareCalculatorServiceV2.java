@@ -3,6 +3,7 @@ package com.parkit.parkingsystem.service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.parkit.parkingsystem.constants.Fare;
@@ -12,8 +13,11 @@ public class FareCalculatorServiceV2 implements IFareCalculatorService {
 	
 	private List<IFareDiscount> discounts;
 
-	public FareCalculatorServiceV2(List<IFareDiscount> p_discounts) {
-		discounts = p_discounts;
+	public FareCalculatorServiceV2() {
+		
+		discounts = new ArrayList<IFareDiscount>();
+		// Add here global discounts
+		discounts.add(new FareDiscount30MnFree());			//Add 30Mn free discount for all
 	}
 	
 	@Override
@@ -63,6 +67,34 @@ public class FareCalculatorServiceV2 implements IFareCalculatorService {
 		}
 		
 		return totalDiscount;
+	}
+	
+	/**
+	 * Add a discount to the list
+	 * @param discount
+	 * @return Discount list updated
+	 * @author Mathias Lauer
+	 * 1 janv. 2021
+	 */
+	public List<IFareDiscount> addDiscount(IFareDiscount discount)
+	{
+		discounts.add(discount);
+		
+		return discounts;
+	}
+	
+	/**
+	 * Remove a discount to the list
+	 * @param discount
+	 * @return Discount list updated
+	 * @author Mathias Lauer
+	 * 1 janv. 2021
+	 */
+	public List<IFareDiscount> removeDiscount(IFareDiscount discount)
+	{
+		discounts.remove(discount);
+		
+		return discounts;
 	}
 
 }

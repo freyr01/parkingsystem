@@ -4,11 +4,11 @@ import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
-import com.parkit.parkingsystem.service.FareCalculatorService;
 import com.parkit.parkingsystem.service.FareCalculatorServiceV2;
 import com.parkit.parkingsystem.service.FareDiscount30MnFree;
 import com.parkit.parkingsystem.service.IFareCalculatorService;
 import com.parkit.parkingsystem.service.IFareDiscount;
+import com.parkit.parkingsystem.service.IFareDiscount5PourcentForKnownUser;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,10 +25,8 @@ public class FareCalculatorServiceTest {
     private Ticket ticket;
 
     @BeforeAll
-    private static void setUp() {
-    	ArrayList<IFareDiscount> discounts = new ArrayList<>();
-    	discounts.add(new FareDiscount30MnFree());
-        fareCalculatorService = new FareCalculatorServiceV2(discounts);
+    private static void setUp() { 
+        fareCalculatorService = new FareCalculatorServiceV2();
     }
 
     @BeforeEach
@@ -152,5 +150,26 @@ public class FareCalculatorServiceTest {
         fareCalculatorService.calculateFare(ticket);
         assertEquals(0.0, ticket.getPrice());
     }
+    
+    @Test
+    public void calculateFareCarWith5PourcentDiscountForKnownUser()
+    {
+    	Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (  60 * 60 * 1000) );//1hour parking for know user time should give 5% discount
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+
+        ticket.setInTime(inTime);
+      
+        ticket.setOutTime(outTime);
+    
+        ticket.setParkingSpot(parkingSpot);
+        IFareDiscount fivePourcentDiscount = new IFareDiscount5PourcentForKnownUser();
+        fareCalculatorService.addDiscount(fivePourcentDiscount);
+        fareCalculatorService.calculateFare(ticket);
+        fareCalculatorService.removeDiscount(fivePourcentDiscount);
+        assertEquals(Fare.CAR_RATE_PER_HOUR - (Fare.CAR_RATE_PER_HOUR * 5/100), ticket.getPrice());
+    }
+    
 
 }

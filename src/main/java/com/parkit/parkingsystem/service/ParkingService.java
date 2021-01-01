@@ -26,12 +26,8 @@ public class ParkingService {
     public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO){
         this.inputReaderUtil = inputReaderUtil;
         this.parkingSpotDAO = parkingSpotDAO;
-        this.ticketDAO = ticketDAO;
-        
-        //Init discount list
-        ArrayList<IFareDiscount> discounts = new ArrayList<>();
-        discounts.add(new FareDiscount30MnFree());			//Add 30Mn free discount for all
-        this.fareCalculatorService = new FareCalculatorServiceV2(discounts);
+        this.ticketDAO = ticketDAO;    
+        this.fareCalculatorService = new FareCalculatorServiceV2();
     }
 
     public void processIncomingVehicle() {
