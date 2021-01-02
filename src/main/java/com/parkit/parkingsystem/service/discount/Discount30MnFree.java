@@ -11,7 +11,7 @@ import com.parkit.parkingsystem.model.Ticket;
  * @author Mathias Lauer
  * 27 déc. 2020
  */
-public class FareDiscount30MnFree implements IFareDiscount {
+public class Discount30MnFree implements IDiscount {
 
 	@Override
 	/**

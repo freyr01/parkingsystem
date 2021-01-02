@@ -6,32 +6,48 @@ import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.FareCalculatorService;
 import com.parkit.parkingsystem.service.IFareCalculatorService;
-import com.parkit.parkingsystem.service.discount.FareDiscount30MnFree;
-import com.parkit.parkingsystem.service.discount.IFareDiscount;
-import com.parkit.parkingsystem.service.discount.FareDiscount5PercentForKnownUser;
+import com.parkit.parkingsystem.service.discount.Discount30MnFree;
+import com.parkit.parkingsystem.service.discount.IDiscount;
+import com.parkit.parkingsystem.service.discount.Discount5PercentForKnownUser;
+import com.parkit.parkingsystem.service.discount.DiscountCalculatorService;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Date;
 
+@ExtendWith(MockitoExtension.class)
 public class FareCalculatorServiceTest {
 
     private static IFareCalculatorService fareCalculatorService;
     private Ticket ticket;
+    
+    @Mock
+    private static DiscountCalculatorService discountCalculator;
 
     @BeforeAll
     private static void setUp() { 
-        fareCalculatorService = new FareCalculatorService();
+        
     }
 
     @BeforeEach
     private void setUpPerTest() {
+    	fareCalculatorService = new FareCalculatorService(discountCalculator);
         ticket = new Ticket();
+    }
+    
+    @AfterEach
+    private void endPerTest() {
     }
 
     @Test
@@ -44,7 +60,10 @@ public class FareCalculatorServiceTest {
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
+        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
         fareCalculatorService.calculateFare(ticket);
+    	verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
+
         assertEquals(ticket.getPrice(), Fare.CAR_RATE_PER_HOUR);
     }
 
@@ -58,7 +77,9 @@ public class FareCalculatorServiceTest {
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
+        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
         fareCalculatorService.calculateFare(ticket);
+        verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
         assertEquals(ticket.getPrice(), Fare.BIKE_RATE_PER_HOUR);
     }
 
@@ -74,6 +95,7 @@ public class FareCalculatorServiceTest {
         ticket.setOutTime(outTime);
         
         ticket.setParkingSpot(parkingSpot);
+       // when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
         assertThrows(NullPointerException.class, () -> fareCalculatorService.calculateFare(ticket));
     }
 
@@ -100,7 +122,9 @@ public class FareCalculatorServiceTest {
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
+        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
         fareCalculatorService.calculateFare(ticket);
+        verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
         assertEquals((0.75 * Fare.BIKE_RATE_PER_HOUR), ticket.getPrice() );
     }
 
@@ -116,8 +140,10 @@ public class FareCalculatorServiceTest {
         ticket.setOutTime(outTime);
     
         ticket.setParkingSpot(parkingSpot);
+        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
         fareCalculatorService.calculateFare(ticket);
-        assertEquals( (0.75 * Fare.CAR_RATE_PER_HOUR) , ticket.getPrice());
+        verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
+        assertEquals( roundToTwoDecimal(0.75 * Fare.CAR_RATE_PER_HOUR) , ticket.getPrice());
     }
 
     @Test
@@ -130,7 +156,9 @@ public class FareCalculatorServiceTest {
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
+        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
         fareCalculatorService.calculateFare(ticket);
+        verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
         assertEquals( (24 * Fare.CAR_RATE_PER_HOUR) , ticket.getPrice());
     }
     
@@ -147,7 +175,9 @@ public class FareCalculatorServiceTest {
         ticket.setOutTime(outTime);
     
         ticket.setParkingSpot(parkingSpot);
+        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(0.0);
         fareCalculatorService.calculateFare(ticket);
+        verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
         assertEquals(0.0, ticket.getPrice());
     }
     
@@ -164,12 +194,16 @@ public class FareCalculatorServiceTest {
         ticket.setOutTime(outTime);
     
         ticket.setParkingSpot(parkingSpot);
-        IFareDiscount fivePourcentDiscount = new FareDiscount5PercentForKnownUser();
-        fareCalculatorService.addDiscount(fivePourcentDiscount);
+        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(0.95);
         fareCalculatorService.calculateFare(ticket);
-        fareCalculatorService.removeDiscount(fivePourcentDiscount);
-        assertEquals(Fare.CAR_RATE_PER_HOUR - (Fare.CAR_RATE_PER_HOUR * 5/100), ticket.getPrice());
+        verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
+        
+        assertEquals(roundToTwoDecimal(Fare.CAR_RATE_PER_HOUR * 0.95), ticket.getPrice());
     }
     
+    private double roundToTwoDecimal(double nbr)
+    {
+    	return (double)Math.round(nbr * 100) / 100;
+    }
 
 }

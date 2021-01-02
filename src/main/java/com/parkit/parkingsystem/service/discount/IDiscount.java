@@ -2,7 +2,7 @@ package com.parkit.parkingsystem.service.discount;
 
 import com.parkit.parkingsystem.model.Ticket;
 
-public interface IFareDiscount {
+public interface IDiscount {
 	
 	/**
 	 * Calculate a discount.
