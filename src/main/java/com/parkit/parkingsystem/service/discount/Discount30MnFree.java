@@ -17,7 +17,7 @@ public class Discount30MnFree implements IDiscount {
 	/**
 	 * 
 	 * @param ticket Ticket to apply the discount, some information can also be used to calculate the discount.
-	 * @return result A number to multiplicate with price to obtain the final price.
+	 * @return result Should return 1.0 if there is no discount to apply, 0.0 if the discount give free access
 	 * @author Mathias Lauer
 	 * 27 déc. 2020
 	 */

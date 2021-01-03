@@ -5,7 +5,10 @@ import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
+import com.parkit.parkingsystem.service.discount.Discount30MnFree;
+import com.parkit.parkingsystem.service.discount.Discount5PercentForKnownUser;
 import com.parkit.parkingsystem.service.discount.DiscountCalculatorService;
+import com.parkit.parkingsystem.service.discount.IDiscount;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +31,13 @@ public class ParkingService {
         this.inputReaderUtil = inputReaderUtil;
         this.parkingSpotDAO = parkingSpotDAO;
         this.ticketDAO = ticketDAO;    
-        this.fareCalculatorService = new FareCalculatorService(new DiscountCalculatorService(ticketDAO));
+        
+        //Discount management 
+        DiscountCalculatorService discountCalculator = new DiscountCalculatorService();
+        discountCalculator.activateDiscount(new Discount30MnFree());
+        discountCalculator.activateDiscount(new Discount5PercentForKnownUser(ticketDAO));
+
+        this.fareCalculatorService = new FareCalculatorService(discountCalculator);
     }
 
     public void processIncomingVehicle() {
@@ -112,7 +121,7 @@ public class ParkingService {
                 ParkingSpot parkingSpot = ticket.getParkingSpot();
                 parkingSpot.setAvailable(true);
                 parkingSpotDAO.updateParking(parkingSpot);
-                if(ticket.getPrice() > 0) {
+                if(ticket.getPrice() > 0.) {
                 	System.out.println("Please pay the parking fare:" + ticket.getPrice());
                 }
                 System.out.println("Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber() + " is:" + outTime);
