@@ -89,7 +89,7 @@ public class DiscountTest {
         double factor = discount5Percent.calculateDiscount(ticket);
         
         verify(ticketDAO, Mockito.times(1)).getTicket(anyString());
-        assertEquals(5/100, factor); //Check if the factor multiple is correct
+        assertEquals(5./100., factor); //Check if the factor multiple is correct
         
 
     }

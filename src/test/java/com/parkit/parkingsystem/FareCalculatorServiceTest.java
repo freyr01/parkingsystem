@@ -1,15 +1,12 @@
 package com.parkit.parkingsystem;
 
-import com.parkit.parkingsystem.constants.Fare;
-import com.parkit.parkingsystem.constants.ParkingType;
-import com.parkit.parkingsystem.model.ParkingSpot;
-import com.parkit.parkingsystem.model.Ticket;
-import com.parkit.parkingsystem.service.FareCalculatorService;
-import com.parkit.parkingsystem.service.IFareCalculatorService;
-import com.parkit.parkingsystem.service.discount.Discount30MnFree;
-import com.parkit.parkingsystem.service.discount.IDiscount;
-import com.parkit.parkingsystem.service.discount.Discount5PercentForKnownUser;
-import com.parkit.parkingsystem.service.discount.DiscountCalculatorService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Date;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,11 +17,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.Date;
+import com.parkit.parkingsystem.constants.Fare;
+import com.parkit.parkingsystem.constants.ParkingType;
+import com.parkit.parkingsystem.model.ParkingSpot;
+import com.parkit.parkingsystem.model.Ticket;
+import com.parkit.parkingsystem.service.FareCalculatorService;
+import com.parkit.parkingsystem.service.IFareCalculatorService;
+import com.parkit.parkingsystem.service.discount.DiscountCalculatorService;
 
 @ExtendWith(MockitoExtension.class)
 public class FareCalculatorServiceTest {
