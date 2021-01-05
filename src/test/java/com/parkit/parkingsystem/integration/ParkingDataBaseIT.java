@@ -71,12 +71,13 @@ public class ParkingDataBaseIT {
 
     @Test
     @DisplayName("Test if a vehicule enter process create a ticket and get an available slot setting it unavailable")
-    public void testParkingACar(){
-    	
+    public int testParkingACar(){
+    	int ticketId = 0;
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
         parkingService.processIncomingVehicle();
      
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
+        ticketId = ticket.getId();
         int nextAvailableSlot = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
         int ticketParkingSpot = ticket.getParkingSpot().getId();
         
@@ -84,12 +85,14 @@ public class ParkingDataBaseIT {
         assertNotNull(ticket.getInTime());
         assertNull(ticket.getOutTime());
         assertNotEquals(nextAvailableSlot, ticketParkingSpot); // Check if next available slot and current ticket parking spot is not the same
+        
+        return ticketId;
     }
 
     @Test
-    @DisplayName("Test if a vehicule exit process update correctly the ticket and parking slot in database")
+    @DisplayName("Test if a vehicule exit process update correctly the right ticket and parking slot in database")
     public void testParkingLotExit(){
-        testParkingACar();
+        int ticketId = testParkingACar();
    
         //Wait 2sec before exiting to prevent bad out time exception
 		try {
@@ -101,6 +104,7 @@ public class ParkingDataBaseIT {
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
         parkingService.processExitingVehicle();
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
+        int requestTicketId = ticket.getId();
         int parkingId = ticket.getParkingSpot().getId();
         
         //Get the parking spot used to verify availability
@@ -121,6 +125,7 @@ public class ParkingDataBaseIT {
         
         assertTrue(parkingSpotIsAvailable);
         assertNotNull(ticket.getOutTime());
+        assertEquals(ticketId, requestTicketId);
     }
 
 }
