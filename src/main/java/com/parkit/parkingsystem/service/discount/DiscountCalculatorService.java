@@ -11,7 +11,7 @@ import com.parkit.parkingsystem.model.Ticket;
  * @author Mathias Lauer
  * 3 janv. 2021
  */
-public class DiscountCalculatorService {
+public class DiscountCalculatorService implements IDiscountCalculatorService {
 	
 	private List<IDiscount> discounts;
 	

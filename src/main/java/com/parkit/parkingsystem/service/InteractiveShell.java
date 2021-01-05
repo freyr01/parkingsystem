@@ -2,6 +2,9 @@ package com.parkit.parkingsystem.service;
 
 import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
+import com.parkit.parkingsystem.service.discount.Discount30MnFree;
+import com.parkit.parkingsystem.service.discount.Discount5PercentForKnownUser;
+import com.parkit.parkingsystem.service.discount.DiscountCalculatorService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,10 +18,18 @@ public class InteractiveShell {
         System.out.println("Welcome to Parking System!");
 
         boolean continueApp = true;
+        
         InputReaderUtil inputReaderUtil = new InputReaderUtil();
         ParkingSpotDAO parkingSpotDAO = new ParkingSpotDAO();
         TicketDAO ticketDAO = new TicketDAO();
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        
+        //Discount management 
+        DiscountCalculatorService discountCalculator = new DiscountCalculatorService();
+        discountCalculator.activateDiscount(new Discount30MnFree());
+        discountCalculator.activateDiscount(new Discount5PercentForKnownUser(ticketDAO));
+
+        FareCalculatorService fareCalculatorService = new FareCalculatorService(discountCalculator);
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
 
         while(continueApp){
             loadMenu();

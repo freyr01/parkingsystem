@@ -9,6 +9,7 @@ import com.parkit.parkingsystem.service.discount.Discount30MnFree;
 import com.parkit.parkingsystem.service.discount.Discount5PercentForKnownUser;
 import com.parkit.parkingsystem.service.discount.DiscountCalculatorService;
 import com.parkit.parkingsystem.service.discount.IDiscount;
+import com.parkit.parkingsystem.service.discount.IDiscountCalculatorService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,22 +23,19 @@ public class ParkingService {
 
    
     private IFareCalculatorService fareCalculatorService;
-
     private InputReaderUtil inputReaderUtil;
     private ParkingSpotDAO parkingSpotDAO;
-    private  TicketDAO ticketDAO;
-
-    public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO){
+    private TicketDAO ticketDAO;
+    
+    public ParkingService(InputReaderUtil inputReaderUtil,
+    		ParkingSpotDAO parkingSpotDAO,
+    		TicketDAO ticketDAO,
+    		IFareCalculatorService p_fareCalculatorService){
+    	
         this.inputReaderUtil = inputReaderUtil;
         this.parkingSpotDAO = parkingSpotDAO;
         this.ticketDAO = ticketDAO;    
-        
-        //Discount management 
-        DiscountCalculatorService discountCalculator = new DiscountCalculatorService();
-        discountCalculator.activateDiscount(new Discount30MnFree());
-        discountCalculator.activateDiscount(new Discount5PercentForKnownUser(ticketDAO));
-
-        this.fareCalculatorService = new FareCalculatorService(discountCalculator);
+        this.fareCalculatorService = p_fareCalculatorService;
     }
 
     public void processIncomingVehicle() {
