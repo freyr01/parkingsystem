@@ -11,10 +11,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -61,12 +63,12 @@ public class ParkingDataBaseIT {
     private void setUpPerTest() throws Exception {
         when(inputReaderUtil.readSelection()).thenReturn(1);
         when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-        dataBasePrepareService.clearDataBaseEntries();
+        //dataBasePrepareService.clearDataBaseEntries();
     }
 
-    @AfterAll
-    private static void tearDown(){
-
+    @AfterEach
+    private void cleanUpPerTest(){
+    	dataBasePrepareService.clearDataBaseEntries();
     }
 
     @Test
@@ -94,12 +96,9 @@ public class ParkingDataBaseIT {
     public void testParkingLotExit(){
         int ticketId = testParkingACar();
    
-        //Wait 2sec before exiting to prevent bad out time exception
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+        //Wait 1sec before exiting to prevent bad out time exception
+        sleep1sec();
+
     	
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
         parkingService.processExitingVehicle();
@@ -126,6 +125,56 @@ public class ParkingDataBaseIT {
         assertTrue(parkingSpotIsAvailable);
         assertNotNull(ticket.getOutTime());
         assertEquals(ticketId, requestTicketId);
+    }
+    
+    @Test
+    public void testRecurentUserTicketUpdate() {
+    	ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
+    	
+    	int firstTicketId = testParkingACar();	//Proceed a first entry and get ticket id
+    	sleep1sec();
+         parkingService.processExitingVehicle(); //Proceed an exit
+         Timestamp firstTicketOutTimestamp = null;
+    	int secondTicketId = testParkingACar(); //Proceed a second entry and get ticket id
+    	sleep1sec();
+    	parkingService.processExitingVehicle(); //Proceed an exit
+    	Timestamp secondTicketOutTimestamp = null;
+    	
+    	Connection con = null;
+        try {
+	        con = dataBaseTestConfig.getConnection();
+	        String request = String.format("select t.out_time from ticket t where id=%d", firstTicketId);
+	        PreparedStatement ps = con.prepareStatement(request);
+	        ResultSet rs = ps.executeQuery();
+	        if(rs.next()) {
+	        	firstTicketOutTimestamp = rs.getTimestamp(1); 	//Get Out time of the first ticket in db
+	        }
+	        
+	        String request2 = String.format("select t.out_time from ticket t where id=%d", secondTicketId);
+	        PreparedStatement ps2 = con.prepareStatement(request2);
+	        ResultSet rs2 = ps2.executeQuery();
+	        if(rs2.next()) {
+	        	secondTicketOutTimestamp = rs.getTimestamp(1); //Get Out time of the second ticket in db
+	        }
+	        
+        } catch (SQLException | ClassNotFoundException e) {
+        	logger.error("Error fetching available slot in IT", e);
+        }   finally {
+            dataBaseTestConfig.closeConnection(con);
+        }
+        
+        //Check if all ticket was filled correctly
+        assertNotNull(firstTicketOutTimestamp);
+        assertNotNull(secondTicketOutTimestamp);
+    }
+    
+    private void sleep1sec()
+    {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			logger.error("Sleep thread error: ", e);
+		}
     }
 
 }
