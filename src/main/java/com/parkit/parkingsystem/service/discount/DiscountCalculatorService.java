@@ -70,5 +70,24 @@ public class DiscountCalculatorService implements IDiscountCalculatorService {
 	public void deactivateDiscount(IDiscount discount) {
 		discounts.remove(discount);
 	}
+	
+	/**
+	 * Check if a discount is activated
+	 * @param discount class
+	 * @return true if it is, false otherwise
+	 */
+	public boolean isActive(Class<?> discountClass)
+	{
+		
+		for(IDiscount d : discounts)
+		{
+			if(d.getClass().getName().equals(discountClass.getName())){
+				return true;
+			}
+		}
+		
+		
+		return false;
+	}
 
 }

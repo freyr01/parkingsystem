@@ -34,6 +34,7 @@ import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.FareCalculatorService;
 import com.parkit.parkingsystem.service.IFareCalculatorService;
 import com.parkit.parkingsystem.service.ParkingService;
+import com.parkit.parkingsystem.service.discount.Discount5PercentForKnownUser;
 import com.parkit.parkingsystem.service.discount.DiscountCalculatorService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 
@@ -56,7 +57,9 @@ public class ParkingDataBaseIT {
         ticketDAO = new TicketDAO();
         ticketDAO.dataBaseConfig = dataBaseTestConfig;
         dataBasePrepareService = new DataBasePrepareService();
-        fareCalculatorService = new FareCalculatorService(new DiscountCalculatorService());
+        DiscountCalculatorService discountCalculatorService = new DiscountCalculatorService();
+        discountCalculatorService.activateDiscount(new Discount5PercentForKnownUser(ticketDAO));
+        fareCalculatorService = new FareCalculatorService(discountCalculatorService);
     }
 
     @BeforeEach

@@ -86,4 +86,32 @@ public class TicketDAO {
         }
         return false;
     }
+    
+    /**
+     * Check if a ticket has been created for this vehicle from the past
+     * @return true is a ticket was created, false otherwise
+     * @param vehicleRegNumber
+     * @author Mathias Lauer
+     * 7 janv. 2021
+     */
+    public boolean ticketAlreadyExist(String vehicleRegNumber)
+    {
+    	boolean res = false;
+    	Connection con = null;
+        try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement ps = con.prepareStatement(DBConstants.GET_TICKET);
+            ps.setString(1,vehicleRegNumber);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) res = true;
+            dataBaseConfig.closeResultSet(rs);
+            dataBaseConfig.closePreparedStatement(ps);
+        }catch (Exception ex){
+            logger.error("Error fetching ticket already close",ex);
+        }finally {
+            dataBaseConfig.closeConnection(con);
+        }
+        
+        return res;
+    }
 }

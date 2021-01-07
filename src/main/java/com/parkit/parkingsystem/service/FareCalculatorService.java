@@ -13,6 +13,7 @@ import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.discount.Discount30MnFree;
 import com.parkit.parkingsystem.service.discount.IDiscount;
+import com.parkit.parkingsystem.service.discount.IDiscountCalculatorService;
 import com.parkit.parkingsystem.service.discount.Discount5PercentForKnownUser;
 import com.parkit.parkingsystem.service.discount.DiscountCalculatorService;
 
@@ -85,5 +86,9 @@ public class FareCalculatorService implements IFareCalculatorService {
 	private double roundDecimal(double nbr)
 	{
 		return (double)Math.round(nbr * roundDecimalAccuracy) / roundDecimalAccuracy;
+	}
+	
+	public IDiscountCalculatorService getDiscountCalculatorService() {
+		return discountCalculator;
 	}
 }
