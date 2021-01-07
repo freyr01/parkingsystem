@@ -131,7 +131,7 @@ public class ParkingDataBaseIT {
     }
     
     @Test
-    public void testRecurentUserTicketUpdate() {
+    public void testRecurentVehicleVisite_shouldReturnCorrectlyFilledTicket_whenProceedManyInOutForSameVehicle() {
     	ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
     	
     	int firstTicketId = testParkingACar();	//Proceed a first entry and get ticket id

@@ -81,7 +81,7 @@
                                 </manifest>
                             </archive>
                             <descriptorRefs>
-                                <descriptorRef>executable-jar-with-dependencies</descriptorRef>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
                         </configuration>
                     </execution>
@@ -98,11 +98,12 @@
                         <version>1.2.0</version>
                     </dependency>
                 </dependencies>
-                <configuration>
+               <!-- this make problems when trying to generate jacoco reports 07/01/2021 LAUER Mathias
+               <configuration>
                     <excludes>
                         <exclude>**/*IT.java</exclude>
                     </excludes>
-                </configuration>
+              </configuration> -
                 <executions>
                     <execution>
                         <id>integration-test</id>
@@ -119,7 +120,7 @@
                             </includes>
                         </configuration>
                     </execution>
-                </executions>
+                </executions> -->
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>

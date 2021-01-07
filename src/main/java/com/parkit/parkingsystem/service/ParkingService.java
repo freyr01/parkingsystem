@@ -1,21 +1,17 @@
 package com.parkit.parkingsystem.service;
 
+import java.util.Date;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
-import com.parkit.parkingsystem.service.discount.Discount30MnFree;
 import com.parkit.parkingsystem.service.discount.Discount5PercentForKnownUser;
-import com.parkit.parkingsystem.service.discount.DiscountCalculatorService;
-import com.parkit.parkingsystem.service.discount.IDiscount;
-import com.parkit.parkingsystem.service.discount.IDiscountCalculatorService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.Date;
 
 public class ParkingService {
 
@@ -44,6 +40,7 @@ public class ParkingService {
             if(parkingSpot !=null && parkingSpot.getId() > 0){
                 String vehicleRegNumber = getVehichleRegNumber();
                 
+                //Test if a ticket exist with this reg number, this should be placed before saving a new ticket
                 if(ticketDAO.ticketAlreadyExist(vehicleRegNumber)) {
                 	System.out.println("Welcome back!");
                 	if(fareCalculatorService.getDiscountCalculatorService().isActive(Discount5PercentForKnownUser.class)) {
