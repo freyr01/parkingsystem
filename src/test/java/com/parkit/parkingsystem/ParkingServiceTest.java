@@ -58,7 +58,12 @@ public class ParkingServiceTest {
 
     @Test
     public void processExitingVehicleTest(){
+    	//Given
+    	
+    	//When
         parkingService.processExitingVehicle();
+        
+        //Then
         verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
     }
 

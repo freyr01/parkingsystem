@@ -28,8 +28,9 @@ public class DiscountTest {
     private static TicketDAO ticketDAO;
     
     @Test
-    public void calculateDiscount30mnFreeFor29MnUse()
+    public void calculateDiscount30mnFreeFor29MnUse_shouldReturn0()
     {
+    	//Given
     	Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() - (  29 * 60 * 1000) );//1hour parking for know user time should give 5% discount
         Date outTime = new Date();
@@ -39,16 +40,19 @@ public class DiscountTest {
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
         ticket.setVehicleRegNumber("ABCDEF");
-        
         IDiscount discount30mnFree = new Discount30MnFree();
+        
+        //When
         double factor = discount30mnFree.calculateDiscount(ticket);
         
+        //Then
         assertEquals(0.0, factor);
     }
     
     @Test
-    public void calculateDiscount30mnFreeFor35MnUse()
+    public void calculateDiscount30mnFreeFor35MnUse_shouldReturn1()
     {
+    	//Given
     	Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() - (  35 * 60 * 1000) );//1hour parking for know user time should give 5% discount
         Date outTime = new Date();
@@ -58,15 +62,18 @@ public class DiscountTest {
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
         ticket.setVehicleRegNumber("ABCDEF");
-        
         IDiscount discount30mnFree = new Discount30MnFree();
+        
+        //When
         double factor = discount30mnFree.calculateDiscount(ticket);
         
+        //Then
         assertEquals(1.0, factor);
     }
     
     @Test
-    public void calculateDiscount5PercentForKnownUser() {
+    public void calculateDiscount5PercentForKnownUser_shouldReturn5Percent() {
+    	//Given
     	// Create the ticket will be return by the mocked method getTicket from db
         Ticket dbTicket = new Ticket();
         dbTicket.setInTime(new Date(System.currentTimeMillis() - (60*60*1000 * 48)));
@@ -86,8 +93,11 @@ public class DiscountTest {
         ticket.setVehicleRegNumber("ABCDEF");
         
         IDiscount discount5Percent = new Discount5PercentForKnownUser(ticketDAO);
+        
+        //When
         double factor = discount5Percent.calculateDiscount(ticket);
         
+        //Then
         verify(ticketDAO, Mockito.times(1)).getTicket(anyString());
         assertEquals(5./100., factor); //Check if the factor multiple is correct
         
@@ -95,9 +105,9 @@ public class DiscountTest {
     }
     
     @Test
-    public void calculateDiscount5PercentForUnknownUser() {
+    public void calculateDiscount5PercentForUnknownUser_shouldReturn1() {
+    	//Given
         when(ticketDAO.getTicket(anyString())).thenReturn(null);
-       
         Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() - (  29 * 60 * 1000) );//1hour parking for know user time should give 5% discount
         Date outTime = new Date();
@@ -106,10 +116,12 @@ public class DiscountTest {
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(new ParkingSpot(1, ParkingType.CAR,false));
         ticket.setVehicleRegNumber("ABCDEF");
-        
         IDiscount discount5Percent = new Discount5PercentForKnownUser(ticketDAO);
+        
+        //When
         double factor = discount5Percent.calculateDiscount(ticket);
         
+        //Then
         verify(ticketDAO, Mockito.times(1)).getTicket(anyString());
         assertEquals(1, factor);
         

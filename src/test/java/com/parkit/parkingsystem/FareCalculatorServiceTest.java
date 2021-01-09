@@ -51,112 +51,133 @@ public class FareCalculatorServiceTest {
 
     @Test
     public void calculateFareCar(){
+    	//Given
         Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() - (  60 * 60 * 1000) );
         Date outTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
 
+        //When
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
-        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
         fareCalculatorService.calculateFare(ticket);
+        
+        //Then
     	verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
-
         assertEquals(ticket.getPrice(), Fare.CAR_RATE_PER_HOUR);
     }
 
     @Test
     public void calculateFareBike(){
+    	//Given
         Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() - (  60 * 60 * 1000) );
         Date outTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE,false);
+        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
 
+        //When
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
-        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
         fareCalculatorService.calculateFare(ticket);
+        
+        //Then
         verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
         assertEquals(ticket.getPrice(), Fare.BIKE_RATE_PER_HOUR);
     }
 
     @Test
     public void calculateFareUnkownType(){
+    	//Given
         Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() - (  60 * 60 * 1000) );
         Date outTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, null,false);
 
+        //When
         ticket.setInTime(inTime);
-       
         ticket.setOutTime(outTime);
-        
         ticket.setParkingSpot(parkingSpot);
-       // when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
+       
+        //Then
         assertThrows(NullPointerException.class, () -> fareCalculatorService.calculateFare(ticket));
     }
 
     @Test
     public void calculateFareBikeWithFutureInTime(){
+    	//Given
         Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() + (  60 * 60 * 1000) );
         Date outTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE,false);
-
+        //When
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
+        
+        //Then
         assertThrows(IllegalArgumentException.class, () -> fareCalculatorService.calculateFare(ticket));
     }
 
     @Test
     public void calculateFareBikeWithLessThanOneHourParkingTime(){
+    	//Given
         Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() - (  45 * 60 * 1000) );//45 minutes parking time should give 3/4th parking fare
         Date outTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE,false);
-
+        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
+        
+        //When
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
-        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
         fareCalculatorService.calculateFare(ticket);
+        
+        //Then
         verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
         assertEquals((0.75 * Fare.BIKE_RATE_PER_HOUR), ticket.getPrice() );
     }
 
     @Test
     public void calculateFareCarWithLessThanOneHourParkingTime(){
+    	//Given
         Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() - (  45 * 60 * 1000) );//45 minutes parking time should give 3/4th parking fare
         Date outTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
-
-        ticket.setInTime(inTime);
-      
-        ticket.setOutTime(outTime);
-    
-        ticket.setParkingSpot(parkingSpot);
         when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
+
+        //When
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
         fareCalculatorService.calculateFare(ticket);
+        
+        //Then
         verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
-        assertEquals( roundToTwoDecimal(0.75 * Fare.CAR_RATE_PER_HOUR) , ticket.getPrice());
+        assertEquals(roundTwoDecimal(0.75 * Fare.CAR_RATE_PER_HOUR) , ticket.getPrice());
     }
 
     @Test
     public void calculateFareCarWithMoreThanADayParkingTime(){
+    	//Given
         Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() - (  24 * 60 * 60 * 1000) );//24 hours parking time should give 24 * parking fare per hour
         Date outTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
 
+        //When
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
         ticket.setParkingSpot(parkingSpot);
-        when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(1.0);
         fareCalculatorService.calculateFare(ticket);
+        
+        //Then
         verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
         assertEquals( (24 * Fare.CAR_RATE_PER_HOUR) , ticket.getPrice());
     }
@@ -164,18 +185,20 @@ public class FareCalculatorServiceTest {
     @Test
     public void calculateFareCarWith30MnFreeDiscount()
     {
+    	//Given
     	Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() - (  30 * 60 * 1000) );//30 minutes parking time should give the 30mn free discount
         Date outTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
-
-        ticket.setInTime(inTime);
-      
-        ticket.setOutTime(outTime);
-    
-        ticket.setParkingSpot(parkingSpot);
         when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(0.0);
+
+        //When
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
         fareCalculatorService.calculateFare(ticket);
+        
+        //Then
         verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
         assertEquals(0.0, ticket.getPrice());
     }
@@ -183,24 +206,25 @@ public class FareCalculatorServiceTest {
     @Test
     public void calculateFareCarWith5PourcentDiscountForKnownUser()
     {
+    	//Given
     	Date inTime = new Date();
         inTime.setTime( System.currentTimeMillis() - (  60 * 60 * 1000) );//1hour parking for know user time should give 5% discount
         Date outTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
-
-        ticket.setInTime(inTime);
-      
-        ticket.setOutTime(outTime);
-    
-        ticket.setParkingSpot(parkingSpot);
         when(discountCalculator.calculateDiscounts(any(Ticket.class))).thenReturn(0.95);
+
+        //When
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);  
         fareCalculatorService.calculateFare(ticket);
-        verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
         
-        assertEquals(roundToTwoDecimal(Fare.CAR_RATE_PER_HOUR * 0.95), ticket.getPrice());
+        //Then
+        verify(discountCalculator, Mockito.times(1)).calculateDiscounts(any(Ticket.class));
+        assertEquals(roundTwoDecimal(Fare.CAR_RATE_PER_HOUR * 0.95), ticket.getPrice());
     }
     
-    private double roundToTwoDecimal(double nbr)
+    private double roundTwoDecimal(double nbr)
     {
     	return (double)Math.round(nbr * 100) / 100;
     }

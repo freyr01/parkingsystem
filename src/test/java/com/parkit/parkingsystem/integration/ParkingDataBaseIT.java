@@ -15,7 +15,6 @@ import java.sql.Timestamp;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,17 +74,20 @@ public class ParkingDataBaseIT {
     }
 
     @Test
-    @DisplayName("Test if a vehicule enter process create a ticket and get an available slot setting it unavailable")
+    @DisplayName("Test if a vehicule enter process create a ticket and get an available slot also setting it unavailable")
     public int testParkingACar(){
+    	//Given
     	int ticketId = 0;
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
+        
+        //When
         parkingService.processIncomingVehicle();
-     
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
         ticketId = ticket.getId();
         int nextAvailableSlot = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
         int ticketParkingSpot = ticket.getParkingSpot().getId();
         
+        //Then
         assertEquals("ABCDEF", ticket.getVehicleRegNumber());	//Check if registration number of the ticket is the same as expected
         assertNotNull(ticket.getInTime());
         assertNull(ticket.getOutTime());
@@ -97,14 +99,14 @@ public class ParkingDataBaseIT {
     @Test
     @DisplayName("Test if a vehicule exit process update correctly the right ticket and parking slot in database")
     public void testParkingLotExit(){
-        int ticketId = testParkingACar();
-   
-        //Wait 1sec before exiting to prevent bad out time exception
-        sleep1sec();
-
+    	//Given
+    	ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
     	
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
+    	//When
+        int ticketId = testParkingACar();
+        sleep1sec();
         parkingService.processExitingVehicle();
+        
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
         int requestTicketId = ticket.getId();
         int parkingId = ticket.getParkingSpot().getId();
@@ -125,6 +127,7 @@ public class ParkingDataBaseIT {
             dataBaseTestConfig.closeConnection(con);
         }
         
+        //Then
         assertTrue(parkingSpotIsAvailable);
         assertNotNull(ticket.getOutTime());
         assertEquals(ticketId, requestTicketId);
@@ -132,8 +135,10 @@ public class ParkingDataBaseIT {
     
     @Test
     public void testRecurentVehicleVisite_shouldReturnCorrectlyFilledTicket_whenProceedManyInOutForSameVehicle() {
+    	//Given
     	ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
     	
+    	//When
     	int firstTicketId = testParkingACar();	//Proceed a first entry and get ticket id
     	sleep1sec();
          parkingService.processExitingVehicle(); //Proceed an exit
@@ -166,6 +171,7 @@ public class ParkingDataBaseIT {
             dataBaseTestConfig.closeConnection(con);
         }
         
+        //Then
         //Check if all ticket was filled correctly
         assertNotNull(firstTicketOutTimestamp);
         assertNotNull(secondTicketOutTimestamp);
