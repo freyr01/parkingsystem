@@ -20,7 +20,7 @@ import com.parkit.parkingsystem.service.discount.DiscountCalculatorService;
 public class FareCalculatorService implements IFareCalculatorService {
 	private static final Logger logger = LogManager.getLogger("FareCalculatorService");
 	private DiscountCalculatorService discountCalculator;
-	private static final int roundDecimalAccuracy = 100;
+	private static final int DECIMAL_ACCURACY = 100;
 	
 	/**
 	 * Constructor
@@ -85,7 +85,7 @@ public class FareCalculatorService implements IFareCalculatorService {
 	
 	private double roundDecimal(double nbr)
 	{
-		return (double)Math.round(nbr * roundDecimalAccuracy) / roundDecimalAccuracy;
+		return (double)Math.round(nbr * DECIMAL_ACCURACY) / DECIMAL_ACCURACY;
 	}
 	
 	public IDiscountCalculatorService getDiscountCalculatorService() {
