@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +46,7 @@ public class ParkingDataBaseIT {
     private static TicketDAO ticketDAO;
     private static DataBasePrepareService dataBasePrepareService;
     private static IFareCalculatorService fareCalculatorService;
+    private ParkingService parkingService; 
 
     @Mock
     private static InputReaderUtil inputReaderUtil;
@@ -65,6 +67,7 @@ public class ParkingDataBaseIT {
     private void setUpPerTest() throws Exception {
         when(inputReaderUtil.readSelection()).thenReturn(1);
         when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+       parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
         //dataBasePrepareService.clearDataBaseEntries();
     }
 
@@ -75,15 +78,12 @@ public class ParkingDataBaseIT {
 
     @Test
     @DisplayName("Test if a vehicule enter process create a ticket and get an available slot also setting it unavailable")
-    public int testParkingACar(){
+    public void testParkingACar(){
     	//Given
-    	int ticketId = 0;
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
         
         //When
         parkingService.processIncomingVehicle();
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
-        ticketId = ticket.getId();
         int nextAvailableSlot = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
         int ticketParkingSpot = ticket.getParkingSpot().getId();
         
@@ -92,23 +92,20 @@ public class ParkingDataBaseIT {
         assertNotNull(ticket.getInTime());
         assertNull(ticket.getOutTime());
         assertNotEquals(nextAvailableSlot, ticketParkingSpot); // Check if next available slot and current ticket parking spot is not the same
-        
-        return ticketId;
+
     }
 
     @Test
     @DisplayName("Test if a vehicule exit process update correctly the right ticket and parking slot in database")
     public void testParkingLotExit(){
     	//Given
-    	ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
-    	
+	
     	//When
-        int ticketId = testParkingACar();
+		parkingService.processIncomingVehicle();
         sleep1sec();
         parkingService.processExitingVehicle();
         
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
-        int requestTicketId = ticket.getId();
         int parkingId = ticket.getParkingSpot().getId();
         
         //Get the parking spot used to verify availability
@@ -130,20 +127,20 @@ public class ParkingDataBaseIT {
         //Then
         assertTrue(parkingSpotIsAvailable);
         assertNotNull(ticket.getOutTime());
-        assertEquals(ticketId, requestTicketId);
     }
     
     @Test
     public void testRecurentVehicleVisite_shouldReturnCorrectlyFilledTicket_whenProceedManyInOutForSameVehicle() {
     	//Given
-    	ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO, fareCalculatorService);
-    	
+
     	//When
-    	int firstTicketId = testParkingACar();	//Proceed a first entry and get ticket id
+    	parkingService.processIncomingVehicle();
+    	int firstTicketId = ticketDAO.getTicket("ABCDEF").getId();	//Proceed a first entry and get ticket id
     	sleep1sec();
          parkingService.processExitingVehicle(); //Proceed an exit
          Timestamp firstTicketOutTimestamp = null;
-    	int secondTicketId = testParkingACar(); //Proceed a second entry and get ticket id
+        parkingService.processIncomingVehicle();
+    	int secondTicketId = ticketDAO.getTicket("ABCDEF").getId(); //Proceed a second entry and get ticket id
     	sleep1sec();
     	parkingService.processExitingVehicle(); //Proceed an exit
     	Timestamp secondTicketOutTimestamp = null;
