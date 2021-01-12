@@ -4,8 +4,13 @@ import com.parkit.parkingsystem.config.DataBaseConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.awt.image.BufferedImageFilter;
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.Properties;
 
@@ -18,7 +23,10 @@ public class DataBaseTestConfig extends DataBaseConfig {
         
         Properties props = new Properties();
         try {
-			props.load(new FileReader("config-test.properties"));
+        	//FileReader reader = new FileReader("config.properties");
+        	BufferedReader reader = Files.newBufferedReader(Paths.get("config.properties"), StandardCharsets.UTF_8);
+			props.load(reader);
+			reader.close();
 		} catch (IOException e) {
 			logger.error("Can't load database test properties file: 'config-test.properties': ", e);
 		}

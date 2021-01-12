@@ -1,7 +1,11 @@
 package com.parkit.parkingsystem.config;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -21,7 +25,9 @@ public class DataBaseConfig {
 
         Properties props = new Properties();
         try {
-			props.load(new FileReader("config.properties"));
+        	BufferedReader reader = Files.newBufferedReader(Paths.get("config.properties"), StandardCharsets.UTF_8);
+			props.load(reader);
+			reader.close();
 		} catch (IOException e) {
 			logger.error("Can't load database properties file: 'config.properties': ", e);
 		}
@@ -29,6 +35,7 @@ public class DataBaseConfig {
         Class.forName("com.mysql.cj.jdbc.Driver");
         return DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/prod",props);
+        
     }
 
     public void closeConnection(Connection con){
