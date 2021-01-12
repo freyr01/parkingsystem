@@ -20,7 +20,7 @@ public class DataBaseTestConfig extends DataBaseConfig {
         try {
 			props.load(new FileReader("config-test.properties"));
 		} catch (IOException e) {
-			logger.error("Can't load database test properties file: config-test.properties: ", e);
+			logger.error("Can't load database test properties file: 'config-test.properties': ", e);
 		}
         
         Class.forName("com.mysql.cj.jdbc.Driver");
