@@ -4,7 +4,10 @@ import com.parkit.parkingsystem.config.DataBaseConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.*;
+import java.util.Properties;
 
 public class DataBaseTestConfig extends DataBaseConfig {
 
@@ -12,9 +15,17 @@ public class DataBaseTestConfig extends DataBaseConfig {
 
     public Connection getConnection() throws ClassNotFoundException, SQLException {
         logger.info("Create DB connection");
+        
+        Properties props = new Properties();
+        try {
+			props.load(new FileReader("config-test.properties"));
+		} catch (IOException e) {
+			logger.error("Can't load database test properties file: config-test.properties: ", e);
+		}
+        
         Class.forName("com.mysql.cj.jdbc.Driver");
         return DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/test","matt","cyber007");
+                "jdbc:mysql://localhost:3306/test", props);
     }
 
     public void closeConnection(Connection con){
