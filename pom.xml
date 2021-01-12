@@ -51,7 +51,7 @@
         <dependency>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.5</version>
+            <version>0.8.6</version>
             <type>maven-plugin</type>
         </dependency>
         <dependency>
@@ -98,12 +98,12 @@
                         <version>1.2.0</version>
                     </dependency>
                 </dependencies>
-               <!-- this make problems when trying to generate jacoco reports 07/01/2021 LAUER Mathias
+               <!-- this make problems when trying to generate jacoco reports 07/01/2021 LAUER Mathias -->
                <configuration>
                     <excludes>
                         <exclude>**/*IT.java</exclude>
                     </excludes>
-              </configuration> -
+              </configuration>
                 <executions>
                     <execution>
                         <id>integration-test</id>
@@ -120,12 +120,13 @@
                             </includes>
                         </configuration>
                     </execution>
-                </executions> -->
+                </executions> 
+                
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
+                <version>0.8.6</version>
                 <executions>
                     <execution>
                         <goals>
@@ -134,7 +135,7 @@
                     </execution>
                     <execution>
                         <id>jacoco-report</id>
-                        <phase>test</phase>
+                        <phase>integration-test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
