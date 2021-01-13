@@ -1,21 +1,15 @@
 package com.parkit.parkingsystem.integration;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Date;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Date;
 
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.dao.TicketDAO;
@@ -60,9 +54,9 @@ public class FareCalculatorServiceIT {
 	    }
 	
 	@Test
-	public void fareCalculationITFor1HourKnownUser_shouldReturnRatePerHourMinus5Percent() {
+	public void fareCalculationITFor1HourKnownCarUser_shouldReturnRatePerHourMinus5Percent() {
 		//Given
-		//Create a previous ticket
+		//Create a previous ticket and save it in db
         Ticket dbTicket = new Ticket();
         dbTicket.setInTime(new Date(System.currentTimeMillis() - (60*60*1000 * 48)));
         dbTicket.setOutTime(new Date(System.currentTimeMillis() - (60*60*1000 * 40)));
@@ -95,7 +89,7 @@ public class FareCalculatorServiceIT {
 	}
 	
 	@Test
-	public void fareCalculationITFor1HourUnknownUser_shouldReturnRatePerHourWithoutDiscount() {
+	public void fareCalculationITFor1HourUnknownCarUser_shouldReturnRatePerHourWithoutDiscount() {
 		//Given
         
         //Create current ticket
@@ -117,7 +111,7 @@ public class FareCalculatorServiceIT {
 	}
 	
 	@Test
-	public void fareCalculationITFor29mn_shouldReturnFreePrice() {
+	public void fareCalculationITFor29mnCarUser_shouldReturnFreePrice() {
 		//Given
         
         //Create current ticket

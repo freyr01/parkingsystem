@@ -76,6 +76,29 @@ public class TicketDAO {
         
         return ticket;
     }
+    
+    public boolean isExistTicket(String vehicleRegNumber) {
+        Connection con = null;
+        ResultSet rs = null;
+        PreparedStatement ps = null;
+        boolean exist = false;
+        try {
+            con = dataBaseConfig.getConnection();
+            ps = con.prepareStatement(DBConstants.GET_COMPLETED_TICKET);
+            ps.setString(1,vehicleRegNumber);
+            rs = ps.executeQuery();
+            exist = rs.first();
+
+        }catch (Exception ex){
+            logger.error("Error fetching next available slot",ex);
+        }finally {
+            dataBaseConfig.closeResultSet(rs);
+            dataBaseConfig.closePreparedStatement(ps);
+            dataBaseConfig.closeConnection(con);
+        }
+        
+        return exist;
+    }
 
     public boolean updateTicket(Ticket ticket) {
         Connection con = null;

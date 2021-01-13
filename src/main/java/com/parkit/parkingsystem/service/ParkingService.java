@@ -41,7 +41,7 @@ public class ParkingService {
                 String vehicleRegNumber = getVehichleRegNumber();
                 Ticket ticket;
                 //Test if a ticket exist with this reg number, this should be placed before saving a new ticket
-                if( ((ticket = ticketDAO.getTicket(vehicleRegNumber)) != null) && (ticket.getOutTime() != null)) {
+                if(ticketDAO.isExistTicket(vehicleRegNumber)) {
                 	System.out.println("Welcome back!");
                 	if(fareCalculatorService.getDiscountCalculatorService().isActive(Discount5PercentForKnownUser.class)) {
                 		System.out.println("As a recurring user of our parking lot, you'll benefit from a 5% discount.");

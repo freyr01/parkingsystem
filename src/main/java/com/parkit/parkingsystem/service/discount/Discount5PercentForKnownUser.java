@@ -26,8 +26,8 @@ public class Discount5PercentForKnownUser implements IDiscount {
 	 */
 	public double calculateDiscount(Ticket ticket) {
 		if(ticketDAO != null) {
-			Ticket dbTicket = ticketDAO.getTicket(ticket.getVehicleRegNumber());
-			if(dbTicket != null && dbTicket.getOutTime() != null) {
+			boolean existTicket = ticketDAO.isExistTicket(ticket.getVehicleRegNumber());
+			if(existTicket) {
 				return 5./100.;
 			}
 		}
