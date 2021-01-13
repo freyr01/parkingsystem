@@ -47,19 +47,9 @@ public class DiscountCalculatorServiceTest {
 		//Given
 		when(discount30MnFree.calculateDiscount(any(Ticket.class))).thenReturn(1.0);
 		when(discount5PercentForKnownUser.calculateDiscount(any(Ticket.class))).thenReturn(5.0/100.0);
-		
-    	Date inTime = new Date();
-        inTime.setTime( System.currentTimeMillis() - (  60 * 60 * 1000) );//1hour parking for know user time should give 5% discount
-        Date outTime = new Date();
-        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
-        Ticket ticket = new Ticket();
-        ticket.setInTime(inTime);
-        ticket.setOutTime(outTime);
-        ticket.setParkingSpot(parkingSpot);
-        ticket.setVehicleRegNumber("ABCDEF");
-        
+	
         //When
-		double totalDiscount = discountCalculator.calculateDiscounts(ticket);
+		double totalDiscount = discountCalculator.calculateDiscounts(new Ticket());
 		
 		//Then
 		verify(discount30MnFree, Mockito.times(1)).calculateDiscount(any(Ticket.class));
