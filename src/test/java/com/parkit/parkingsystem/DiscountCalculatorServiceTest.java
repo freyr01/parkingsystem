@@ -46,7 +46,9 @@ public class DiscountCalculatorServiceTest {
 	public void calculTotalDiscountFor5PercentAndNoFreeAccess_ShouldReturnFactor95Percent() {
 		//Given
 		when(discount30MnFree.calculateDiscount(any(Ticket.class))).thenReturn(1.0);
+		//Return factor 1 for no free access
 		when(discount5PercentForKnownUser.calculateDiscount(any(Ticket.class))).thenReturn(5.0/100.0);
+		//Return 5% for known user
 	
         //When
 		double totalDiscount = discountCalculator.calculateDiscounts(new Ticket());
